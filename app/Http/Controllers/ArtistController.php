@@ -20,9 +20,9 @@ class ArtistController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Artist $artist)
     {
-        return view('artists.create');
+        return view('artists.create', ['artist' => $artist, 'countries' => Country::all()]);
     }
 
     /**
@@ -68,6 +68,9 @@ class ArtistController extends Controller
      */
     public function destroy(Artist $artist)
     {
+        $artist->hasPlayed()->detach();
+        $artist->save();
+
         $artist->delete();
 
         return response()->json();

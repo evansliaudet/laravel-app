@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Movie extends Model
 {
-    protected $fillabe = ['title', 'year'];
+    protected $fillable = ['title', 'year', 'director_id', 'country_id'];
 
     public function country()
     {
@@ -20,7 +20,7 @@ class Movie extends Model
 
     public function hasDirected()
     {
-        return $this->hasMany(Movie::class, 'director_id');
+        return $this->hasMany(Movie::class);
     }
 
     public function actors()

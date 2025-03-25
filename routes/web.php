@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ArtistController;
+use App\Http\Controllers\MovieController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,3 +18,4 @@ Route::middleware([
     })->name('dashboard');
 });
 Route::resource('artist', ArtistController::class);
+Route::resource('movie', MovieController::class);

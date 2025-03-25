@@ -1,31 +1,38 @@
 <x-guest-layout>
-    <table class="table table-striped table-centered">
-        <thead>
-            <tr>
-                <th>{{ __('Name') }}</th>
-                <th>{{ __('Firstname') }}</th>
-                <th>{{ __('Country') }}</th>
-                <th>{{ __('Actions') }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($artists as $artist)
+    <div class="h-screen flex flex-col gap-5 justify-center items-center">
+        <table class="table-fixed w-full">
+            <thead>
                 <tr>
-                    <td>{{ $artist->name }}</td>
-                    <td>{{ $artist->firstname }}</td>
-                    <td>{{ $artist->country->name }}</td>
-                    <td class="table-action"> <a href="{{ route('artist.edit', $artist->id) }}">
-                            {{ __('Edit') }}
-                        </a>
-                        <a href="{{ route('artist.destroy', $artist->id) }}" class="text-red-500">
-                            {{ __('Delete') }}
-                        </a>
-                    </td>
+                    <th class="text-start">{{ __('Name') }}</th>
+                    <th class="text-start">{{ __('Firstname') }}</th>
+                    <th class="text-start">{{ __('Country') }}</th>
+                    <th class="text-start">{{ __('Actions') }}</th>
                 </tr>
-            @endforeach
-        </tbody>
-    </table>
-    {{ $artists->links() }}
+            </thead>
+            <tbody>
+                @foreach($artists as $artist)
+                    <tr>
+                        <td>{{ $artist->name }}</td>
+                        <td>{{ $artist->firstname }}</td>
+                        <td>{{ $artist->country->name }}</td>
+                        <td class="table-action"> <a href="{{ route('artist.edit', $artist->id) }}">
+                                {{ __('Edit') }}
+                            </a>
+                            <a href="{{ route('artist.destroy', $artist->id) }}" class="text-red-500 delete">
+                                {{ __('Delete') }}
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div class="absolute bottom-5">
+            {{ $artists->links() }}
+        </div>
+
+    </div>
+
     <script>
         // Récupération du token
         let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
