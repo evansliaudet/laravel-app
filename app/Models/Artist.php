@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Artist extends Model
 {
-    protected $fillable = ["name", "firstname", "birthdate", 'country_id'];
+    use HasFactory;
+    
+    protected $fillable = ["firstname", "name", "birthdate", 'country_id'];
 
     public function country()
     {

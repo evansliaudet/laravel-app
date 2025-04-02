@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ArtistRequest;
 use App\Models\Artist;
 use App\Models\Country;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ArtistController extends Controller
 {
@@ -14,7 +15,7 @@ class ArtistController extends Controller
      */
     public function index()
     {
-        return view('artists.index', ['artists' => Artist::paginate(1)]);
+        return view('artists.index', ['artists' => Artist::paginate(3)]);
     }
 
     /**
@@ -28,9 +29,19 @@ class ArtistController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(ArtistRequest $request)
+    public function store(ArtistRequest $request, Artist $artist)
     {
-        Artist::create($request->validated());
+        // Create the artist first
+        $artist = Artist::create($request->validated());
+
+        // Check if a file was uploaded
+
+            $poster = $request->file('poster');
+            $filename = 'poster_' . $artist->id . '.' . $poster->guessClientExtension();
+
+            // Save the image
+            Image::read($poster)->cover(180, 240)
+                ->save(storage_path('app/public/uploads/artists/' . $filename));
 
         return redirect()
             ->route('artist.index')

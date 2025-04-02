@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -45,4 +45,4 @@
             <x-button type="submit">Update</x-button>
         </div>
     </form>
-</x-guest-layout>
+</x-app-layout>

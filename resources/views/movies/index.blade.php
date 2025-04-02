@@ -1,71 +1,61 @@
-<x-guest-layout>
-    <div class="h-screen flex flex-col gap-5 justify-center items-center">
-        <a href="{{ route('movie.create') }}"
-            class="border border-green-500 bg-green-100 rounded text-green-700 py-1 px-6 cursor-pointer transition ease-in-out duration-300 hover:bg-green-200">Create</a>
-        <table class="table-fixed w-full">
-            <thead>
-                <tr>
-                    <th class="text-start">{{ __('Title') }}</th>
-                    <th class="text-start">{{ __('Year') }}</th>
-                    <th class="text-start">{{ __('Artist') }}</th>
-                    <th class="text-start">{{ __('Role') }}</th>
-                    <th class="text-start">{{ __('Country') }}</th>
-                    <th class="text-start">{{ __('Actions') }}</th>
-                </tr>
-            </thead>
-            <tbody>
+<x-app-layout>
+    <div class="h-screen flex flex-col gap-5 justify-center items-center p-6 bg-gray-100">
+        <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-4">
+            <a href="{{ route('movie.create') }}"
+                class="border border-green-500 bg-green-100 rounded text-green-700 py-2 px-8 cursor-pointer transition ease-in-out duration-300 hover:bg-green-200">Create</a>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
                 @foreach($movies as $movie)
-                        @foreach ($movie->director->hasPlayed as $artistMovie)
-                                @if ($artistMovie->id == $movie->id)
-                                        @php
-                                            $role = $artistMovie->pivot->role_name;
-                                        @endphp
-                                @else
-                                        @php
-                                            $role = "Unknown";
-                                        @endphp
-                                @endif
-                        @endforeach
-                        <tr>
-                            <td>{{ $movie->title }}</td>
-                            <td>{{ $movie->year }}</td>
-                            <td>{{ $movie->director->name }} {{ $movie->director->firstname }}</td>
-                            <td>{{ $role }}</td>
-                            <td>{{ $movie->country->name }}</td>
-                            <td class="table-action"> <a href="{{ route('movie.edit', $movie->id) }}">
-                                    {{ __('Edit') }}
-                                </a>
-                                <a href="{{ route('movie.destroy', $movie->id) }}" class="text-red-500 delete">
-                                    {{ __('Delete') }}
-                                </a>
-                            </td>
-                        </tr>
+                    <div>
+                        <a href="{{ route('movie.show', $movie->id) }}"
+                            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                            <img src="{{ asset('storage/uploads/posters/poster_' . $movie->id . '.png') }}"
+                                alt="{{ $movie->title }}" class="w-full h-48 object-cover">
+                            <div class="p-4">
+                                <h3 class="text-lg font-semibold">{{ $movie->title }}</h3>
+                                <p class="text-sm text-gray-600">{{ $movie->year }}</p>
+                                <p class="text-sm text-gray-600">
+                                    {{ $movie->director->name ?? "Unknown" }} {{ $movie->director->firstname ?? "" }}
+                                </p>
+                                <p class="text-sm text-gray-600">{{ $movie->country->name ?? "Unknown" }}</p>
+                                <div class="flex gap-2 mt-3">
+                                    <a href="{{ route('movie.edit', $movie->id) }}" class="text-blue-600 hover:underline">
+                                        {{ __('Edit') }}
+                                    </a>
+                                    <a href="{{ route('movie.destroy', $movie->id) }}"
+                                        class="text-red-600 hover:underline delete">
+                                        {{ __('Delete') }}
+                                    </a>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+
                 @endforeach
-            </tbody>
-        </table>
-
-        <div class="absolute bottom-5">
-            {{ $movies->links() }}
+            </div>
+            <div class="mt-4">
+                {{ $movies->links() }}
+            </div>
         </div>
-
     </div>
 
     <script>
-        // Récupération du token
-        let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        // Ajout des événements
-        document.querySelectorAll('.delete').forEach(item => {
-            item.addEventListener('click', event => {
-                event.preventDefault();
-                // Requête AJAX de suppression
-                fetch(event.target.href, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': token
-                    },
-                    method: 'DELETE',
+        document.addEventListener('DOMContentLoaded', function () {
+            let token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            document.querySelectorAll('.delete').forEach(item => {
+                item.addEventListener('click', event => {
+                    event.preventDefault();
+                    if (confirm('Are you sure you want to delete this movie?')) {
+                        fetch(event.target.href, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'X-CSRF-TOKEN': token
+                            },
+                            method: 'DELETE',
+                        }).then(response => response.json())
+                            .then(data => location.reload());
+                    }
                 });
-            })
+            });
         });
     </script>
-</x-guest-layout>
+</x-app-layout>

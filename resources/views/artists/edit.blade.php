@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-app-layout>
     <form method="POST" action="{{ route('artist.update', $artist->id) }}"
         class="flex items-center justify-center p-5 h-screen">
         {{ csrf_field() }}
@@ -24,4 +24,4 @@
             <x-button type="submit">Update</x-button>
         </div>
     </form>
-</x-guest-layout>
+</x-app-layout>

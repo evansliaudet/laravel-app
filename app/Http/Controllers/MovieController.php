@@ -7,6 +7,7 @@ use App\Models\Country;
 use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Artist;
+use Intervention\Image\Laravel\Facades\Image;
 
 class MovieController extends Controller
 {
@@ -15,7 +16,7 @@ class MovieController extends Controller
      */
     public function index()
     {
-        return view('movies.index', ['movies' => Movie::paginate(1)]);
+        return view('movies.index', ['movies' => Movie::paginate(4)]);
     }
 
     /**
@@ -31,7 +32,13 @@ class MovieController extends Controller
      */
     public function store(MovieRequest $request)
     {
-        Movie::create($request->validated());
+        $movie = Movie::create($request->validated());
+
+        $poster = $request->file('poster');
+        $filename = 'poster_' . $movie->id . '.' . $poster->guessClientExtension();
+
+        Image::read($poster)->cover(180, 240)
+            ->save(storage_path('app/public/uploads/posters/' . $filename));
 
         return redirect()
             ->route('movie.index')
@@ -41,9 +48,13 @@ class MovieController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Movie $movie)
     {
-        //
+        return view('movies.show', [
+            'movie' => $movie,
+            'artists' => Artist::all(),
+            'cast' => $movie->actors  // Fetch the cast
+        ]);
     }
 
     /**
@@ -72,5 +83,21 @@ class MovieController extends Controller
         $movie->delete();
 
         return response()->json();
+    }
+
+    public function attach(Request $request, Movie $movie)
+    {
+        $movie->actors()->attach($request->get('actor_id'), ['role_name' => $request->get('role')]);
+
+        return redirect()->route('movie.show', $movie)->with('ok', __('Actor has been attached to movie'));
+    }
+
+    public function detach(Movie $movie, Artist $artist)
+    {
+        $movie->actors()->detach($artist->id);
+    
+        return redirect()
+            ->route('movie.show', $movie)
+            ->with('ok', __('Actor has been detached from movie'));
     }
 }
