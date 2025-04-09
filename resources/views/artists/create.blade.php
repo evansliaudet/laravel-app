@@ -5,7 +5,7 @@
             <h1 class="text-4xl font-bold">Add an artist</h1>
 
             <div>
-                <label for="poster">Poster</label>
+                <label for="poster">Photo</label>
                 <input type="file" name="poster" id="poster" accept="image/*" required>
             </div>
             <p class=" flex flex-col w-full">

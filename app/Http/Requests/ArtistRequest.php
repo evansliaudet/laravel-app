@@ -22,9 +22,10 @@ class ArtistRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:20',
-            'firstname' => 'required|string|max:15',
-            'country_id' => 'required|exists:countries,id'
+            'name' => 'required|string|max:255',
+            'firstname' => 'required|string|max:255',
+            'country_id' => 'required|exists:countries,id',
+            'poster' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ];
     }
 }

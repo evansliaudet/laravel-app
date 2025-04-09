@@ -16,17 +16,23 @@
                     </thead>
                     <tbody>
                         @foreach($artists as $artist)
-                            <tr class="border-b border-gray-200 hover:bg-gray-100">
-                                <td><img src="{{ asset('storage/uploads/artists/poster_' . $artist->id . '.png') }}" alt="{{ $artist->firstname }}" class="size-44 object-cover"></td>
-                                <td class="p-3">{{ $artist->name }}</td>
+                            <tr class="border-b border-gray-200 hover:bg-gray-100 cursor-pointer" 
+                                onclick="window.location.href='{{ route('artist.show', $artist->id) }}'">
+                                <td>
+                                    <img src="{{ asset('storage/uploads/artists/artist_' . $artist->id . '.png') }}" 
+                                         alt="{{ $artist->firstname }}" 
+                                         class="size-44 object-cover">
+                                </td>
+                                <td class="p-3">
+                                    {{ $artist->name }}
+                                </td>
                                 <td class="p-3">{{ $artist->firstname }}</td>
                                 <td class="p-3">{{ $artist->country->name ?? "Unknown" }}</td>
                                 <td class="p-3 space-x-3">
                                     <a href="{{ route('artist.edit', $artist->id) }}" class="text-blue-600 hover:underline">
                                         {{ __('Edit') }}
                                     </a>
-                                    <a href="{{ route('artist.destroy', $artist->id) }}"
-                                        class="text-red-600 hover:underline delete">
+                                    <a href="{{ route('artist.destroy', $artist->id) }}" class="text-red-600 hover:underline delete">
                                         {{ __('Delete') }}
                                     </a>
                                 </td>
