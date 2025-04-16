@@ -16,7 +16,23 @@ class ArtistController extends Controller
      */
     public function index()
     {
-        return view('artists.index', ['artists' => Artist::paginate(3)]);
+        $artists = Artist::paginate(3);
+        foreach ($artists as $artist) {
+            $artist->image_extension = $this->getImageExtension($artist->id);
+        }
+        return view('artists.index', ['artists' => $artists]);
+    }
+
+    private function getImageExtension($artistId)
+    {
+        $path = storage_path(
+            'app/public/uploads/artists/artist_' . $artistId . '.*'
+        );
+        $files = glob($path);
+        if (!empty($files)) {
+            return pathinfo($files[0], PATHINFO_EXTENSION);
+        }
+        return null;
     }
 
     /**
@@ -55,8 +71,9 @@ class ArtistController extends Controller
      */
     public function show(Artist $artist)
     {
+        $artist->image_extension = $this->getImageExtension($artist->id);
         $artist->load(['country', 'hasPlayed']);
-        
+
         return view('artists.show', ['artist' => $artist]);
     }
 

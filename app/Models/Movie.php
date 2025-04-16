@@ -27,7 +27,15 @@ class Movie extends Model
 
     public function actors()
     {
-        return $this->belongsToMany(Artist::class, 'artist_movie')
-                    ->withPivot('role_name');
+        return $this->belongsToMany(Artist::class, 'artist_movie')->withPivot(
+            'role_name'
+        );
+    }
+
+    public function cinemas()
+    {
+        return $this->belongsToMany(Cinema::class)
+            ->withPivot('screening_time')
+            ->withTimestamps();
     }
 }

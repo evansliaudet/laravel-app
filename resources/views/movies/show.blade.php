@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -55,9 +55,28 @@
                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Add</button>
             </form>
 
+            <h2 class="text-2xl font-semibold mt-4">Screenings</h2>
+            <div class="grid grid-cols-1 gap-4 w-full">
+                @forelse($movie->cinemas as $cinema)
+                    <div class="bg-gray-100 rounded-lg p-4 shadow-md flex justify-between items-center w-full">
+                        <div>
+                            <h3 class="text-lg font-bold">{{ $cinema->name }}</h3>
+                            <p class="text-gray-600">{{ $cinema->address }}</p>
+                            <p class="text-gray-600">{{ \Carbon\Carbon::parse($cinema->pivot->screening_time)->format('d/m/Y H:i') }}</p>
+                        </div>
+                        <a href="{{ route('cinema.show', $cinema->id) }}" 
+                           class="bg-blue-600 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-700 transition">
+                            View Cinema
+                        </a>
+                    </div>
+                @empty
+                    <p class="text-gray-500">No screenings scheduled for this movie.</p>
+                @endforelse
+            </div>
+
             <div class="mt-4">
                 <a href="{{ route('movie.index') }}" class="text-indigo-600 hover:underline">Back to Movies</a>
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>

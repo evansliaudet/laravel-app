@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <div class="h-screen flex flex-col gap-5 justify-center items-center p-6 bg-gray-100">
         <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-4">
             <a href="{{ route('artist.create') }}"
@@ -19,7 +19,7 @@
                             <tr class="border-b border-gray-200 hover:bg-gray-100 cursor-pointer" 
                                 onclick="window.location.href='{{ route('artist.show', $artist->id) }}'">
                                 <td>
-                                    <img src="{{ asset('storage/uploads/artists/artist_' . $artist->id . '.png') }}" 
+                                <img src="{{ asset('storage/uploads/artists/artist_' . $artist->id . '.' . $artist->image_extension) }}" 
                                          alt="{{ $artist->firstname }}" 
                                          class="size-44 object-cover">
                                 </td>
@@ -67,4 +67,4 @@
                 });
             });
         </script>
-</x-app-layout>
+</x-guest-layout>

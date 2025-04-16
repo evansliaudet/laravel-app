@@ -9,11 +9,20 @@
         </div>
     @endif
     <form method="POST" action="{{ route('movie.update', $movie->id) }}"
-        class="flex items-center justify-center p-5 h-screen">
+        class="flex items-center justify-center p-5 h-screen" enctype="multipart/form-data">
         {{ csrf_field() }}
         {{ method_field('PUT') }}
         <div class="max-w-sm w-full flex flex-col gap-5 items-start">
-            <h1 class="text-4xl font-bold">Ajouter un film</h1>
+            <h1 class="text-4xl font-bold">Modifier le film {{$movie->title}}</h1>
+            <div>
+                <label for="poster">Poster</label>
+                <input type="file" name="poster" id="poster" accept="image/*">
+                @if($movie->poster)
+                    <img src="{{ asset('storage/uploads/posters/poster_' . $movie->id . '.' . $movie->image_extension) }}" 
+                         alt="{{ $movie->title }}" 
+                         class="w-32 h-32 object-cover rounded-lg mt-2">
+                @endif
+            </div>
             <p class=" flex flex-col w-full">
                 <label for="title">Title</label>
                 <x-input type="text" name="title" id="title" value="{{ $movie->title }}" required />

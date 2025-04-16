@@ -31,7 +31,9 @@ class CountryController extends Controller
     {
         Country::create($request->validated());
 
-        return redirect()->route('country.index')->with('ok', __('Country has been saved'));
+        return redirect()
+            ->route('country.index')
+            ->with('ok', __('Country has been saved'));
     }
 
     /**
@@ -53,9 +55,15 @@ class CountryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(CountryRequest $request, Country $country)
     {
-        //
+        $data = $request->validated();
+
+        $country->update($data);
+
+        return redirect()
+            ->route('country.index')
+            ->with('ok', __('Country has been updated'));
     }
 
     /**

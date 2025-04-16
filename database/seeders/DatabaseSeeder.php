@@ -9,6 +9,8 @@ use Database\Seeders\CountrySeeder;
 use Database\Seeders\ArtistSeeder;
 use Database\Seeders\MovieSeeder;
 use Database\Seeders\ArtistMovieSeeder;
+use Database\Seeders\CinemaSeeder;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -23,12 +25,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-
         $this->call([
             CountrySeeder::class,
             ArtistSeeder::class,
             MovieSeeder::class,
             ArtistMovieSeeder::class,
+            CinemaSeeder::class,
+            RoomSeeder::class,
+            ScreeningSeeder::class,
         ]);
     }
 }

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -13,7 +13,7 @@
         <div class="max-w-lg w-full flex flex-col gap-5 items-start">
             <h1 class="text-4xl font-bold">{{ $artist->firstname }} {{ $artist->name }}</h1>
 
-            <img src="{{ asset('storage/uploads/artists/artist_' . $artist->id . '.png') }}" 
+            <img src="{{ asset('storage/uploads/artists/artist_' . $artist->id . '.' . $artist->image_extension) }}"    
                  alt="{{ $artist->firstname }} {{ $artist->name }}" 
                  class="w-full h-64 object-cover rounded-lg shadow-md mt-4">
             
@@ -48,5 +48,5 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>
 

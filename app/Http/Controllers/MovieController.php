@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Movie;
 use App\Models\Artist;
 use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
@@ -24,7 +25,11 @@ class MovieController extends Controller
      */
     public function create(Movie $movie)
     {
-        return view('movies.create', ['movie' => $movie, 'artists' => Artist::all(), 'countries' => Country::all()]);
+        return view('movies.create', [
+            'movie' => $movie,
+            'artists' => Artist::all(),
+            'countries' => Country::all(),
+        ]);
     }
 
     /**
@@ -35,9 +40,11 @@ class MovieController extends Controller
         $movie = Movie::create($request->validated());
 
         $poster = $request->file('poster');
-        $filename = 'poster_' . $movie->id . '.' . $poster->guessClientExtension();
+        $filename =
+            'poster_' . $movie->id . '.' . $poster->guessClientExtension();
 
-        Image::read($poster)->cover(180, 240)
+        Image::read($poster)
+            ->cover(180, 240)
             ->save(storage_path('app/public/uploads/posters/' . $filename));
 
         return redirect()
@@ -50,10 +57,11 @@ class MovieController extends Controller
      */
     public function show(Movie $movie)
     {
+        $movie->load(['cinemas', 'actors']);
         return view('movies.show', [
             'movie' => $movie,
             'artists' => Artist::all(),
-            'cast' => $movie->actors  // Fetch the cast
+            'cast' => $movie->actors,
         ]);
     }
 
@@ -62,7 +70,12 @@ class MovieController extends Controller
      */
     public function edit(Movie $movie)
     {
-        return view('movies.edit', ['movie' => $movie, 'artists' => Artist::all(), 'countries' => Country::all()]);
+        $movie->image_extension = $this->getImageExtension($movie->id);
+        return view('movies.edit', [
+            'movie' => $movie,
+            'artists' => Artist::all(),
+            'countries' => Country::all(),
+        ]);
     }
 
     /**
@@ -70,9 +83,42 @@ class MovieController extends Controller
      */
     public function update(MovieRequest $request, Movie $movie)
     {
-        $movie->update($request->validated());
+        $data = $request->validated();
 
-        return redirect()->route('movie.index')->with('ok', __('Movie has been updated'));
+        if ($request->hasFile('poster')) {
+            if (
+                $movie->poster &&
+                Storage::exists(
+                    'public/uploads/posters/poster_' . $movie->id . '.*'
+                )
+            ) {
+                $oldFiles = glob(
+                    storage_path(
+                        'app/public/uploads/posters/poster_' . $movie->id . '.*'
+                    )
+                );
+                foreach ($oldFiles as $file) {
+                    unlink($file);
+                }
+            }
+
+            $poster = $request->file('poster');
+            $filename =
+                'poster_' .
+                $movie->id .
+                '.' .
+                $poster->getClientOriginalExtension();
+
+            Image::read($poster)
+                ->cover(180, 240)
+                ->save(storage_path('app/public/uploads/posters/' . $filename));
+        }
+
+        $movie->update($data);
+
+        return redirect()
+            ->route('movie.index')
+            ->with('ok', __('Movie has been updated'));
     }
 
     /**
@@ -87,17 +133,33 @@ class MovieController extends Controller
 
     public function attach(Request $request, Movie $movie)
     {
-        $movie->actors()->attach($request->get('actor_id'), ['role_name' => $request->get('role')]);
+        $movie->actors()->attach($request->get('actor_id'), [
+            'role_name' => $request->get('role'),
+        ]);
 
-        return redirect()->route('movie.show', $movie)->with('ok', __('Actor has been attached to movie'));
+        return redirect()
+            ->route('movie.show', $movie)
+            ->with('ok', __('Actor has been attached to movie'));
     }
 
     public function detach(Movie $movie, Artist $artist)
     {
         $movie->actors()->detach($artist->id);
-    
+
         return redirect()
             ->route('movie.show', $movie)
             ->with('ok', __('Actor has been detached from movie'));
+    }
+
+    private function getImageExtension($movieId)
+    {
+        $path = storage_path(
+            'app/public/uploads/posters/poster_' . $movieId . '.*'
+        );
+        $files = glob($path);
+        if (!empty($files)) {
+            return pathinfo($files[0], PATHINFO_EXTENSION);
+        }
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-guest-layout>
     <div class="h-screen flex flex-col gap-5 justify-center items-center p-6 bg-gray-100">
         <div class="w-full max-w-4xl bg-white shadow-lg rounded-lg p-4">
             <a href="{{ route('country.create') }}"
@@ -55,4 +55,4 @@
                 });
             });
         </script>
-</x-app-layout>
+</x-guest-layout>
