@@ -14,6 +14,9 @@
                         </option>
                     @endforeach
                 </select>
+                @error('movie_id')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </p>
 
             <p class="flex flex-col w-full">
@@ -25,12 +28,18 @@
                         </option>
                     @endforeach
                 </select>
+                @error('room_id')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </p>
 
             <p class="flex flex-col w-full">
                 <label for="screening_time">{{ __('Screening Time') }}</label>
                 <x-input type="datetime-local" name="screening_time" id="screening_time" 
                          value="{{ $screening->screening_time->format('Y-m-d\TH:i') }}" required />
+                @error('screening_time')
+                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                @enderror
             </p>
 
             <x-button type="submit">{{ __('Update') }}</x-button>

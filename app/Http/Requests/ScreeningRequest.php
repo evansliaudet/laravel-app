@@ -24,7 +24,7 @@ class ScreeningRequest extends FormRequest
         return [
             'movie_id' => 'required|exists:movies,id',
             'room_id' => 'required|exists:rooms,id',
-            'screening_time' => 'required|date|after:now',
+            'screening_time' => 'required|date',
         ];
     }
 }

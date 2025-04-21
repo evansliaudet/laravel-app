@@ -12,14 +12,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/artist', [ArtistController::class, 'index'])->name('artist.index');
-Route::get('/artist/{artist}', [ArtistController::class, 'show'])->name(
-    'artist.show'
-);
-
+// Public routes
 Route::get('/movie', [MovieController::class, 'index'])->name('movie.index');
 Route::get('/movie/{movie}', [MovieController::class, 'show'])->name(
     'movie.show'
+);
+
+Route::get('/artist', [ArtistController::class, 'index'])->name('artist.index');
+Route::get('/artist/{artist}', [ArtistController::class, 'show'])->name(
+    'artist.show'
 );
 
 Route::get('/country', [CountryController::class, 'index'])->name(
@@ -54,25 +55,116 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    Route::resource('artist', ArtistController::class)->except([
-        'index',
-        'show',
-    ]);
-    Route::resource('movie', MovieController::class)->except(['index', 'show']);
-    Route::resource('country', CountryController::class)->except([
-        'index',
-        'show',
-    ]);
-    Route::resource('cinema', CinemaController::class)->except([
-        'index',
-        'show',
-    ]);
-    Route::resource('room', RoomController::class)->except(['index', 'show']);
-    Route::resource('screening', ScreeningController::class)->except([
-        'index',
-        'show',
-    ]);
+    // Define individual protected routes instead of using resource with except
+    // Movie routes
+    Route::get('movie/create', [MovieController::class, 'create'])->name(
+        'movie.create'
+    );
+    Route::post('movie', [MovieController::class, 'store'])->name(
+        'movie.store'
+    );
+    Route::get('movie/{movie}/edit', [MovieController::class, 'edit'])->name(
+        'movie.edit'
+    );
+    Route::put('movie/{movie}', [MovieController::class, 'update'])->name(
+        'movie.update'
+    );
+    Route::delete('movie/{movie}', [MovieController::class, 'destroy'])->name(
+        'movie.destroy'
+    );
 
+    // Artist routes
+    Route::get('artist/create', [ArtistController::class, 'create'])->name(
+        'artist.create'
+    );
+    Route::post('artist', [ArtistController::class, 'store'])->name(
+        'artist.store'
+    );
+    Route::get('artist/{artist}/edit', [ArtistController::class, 'edit'])->name(
+        'artist.edit'
+    );
+    Route::put('artist/{artist}', [ArtistController::class, 'update'])->name(
+        'artist.update'
+    );
+    Route::delete('artist/{artist}', [
+        ArtistController::class,
+        'destroy',
+    ])->name('artist.destroy');
+
+    // Country routes
+    Route::get('country/create', [CountryController::class, 'create'])->name(
+        'country.create'
+    );
+    Route::post('country', [CountryController::class, 'store'])->name(
+        'country.store'
+    );
+    Route::get('country/{country}/edit', [
+        CountryController::class,
+        'edit',
+    ])->name('country.edit');
+    Route::put('country/{country}', [CountryController::class, 'update'])->name(
+        'country.update'
+    );
+    Route::delete('country/{country}', [
+        CountryController::class,
+        'destroy',
+    ])->name('country.destroy');
+
+    // Cinema routes
+    Route::get('cinema/create', [CinemaController::class, 'create'])->name(
+        'cinema.create'
+    );
+    Route::post('cinema', [CinemaController::class, 'store'])->name(
+        'cinema.store'
+    );
+    Route::get('cinema/{cinema}/edit', [CinemaController::class, 'edit'])->name(
+        'cinema.edit'
+    );
+    Route::put('cinema/{cinema}', [CinemaController::class, 'update'])->name(
+        'cinema.update'
+    );
+    Route::delete('cinema/{cinema}', [
+        CinemaController::class,
+        'destroy',
+    ])->name('cinema.destroy');
+
+    // Room routes
+    Route::get('room/create', [RoomController::class, 'create'])->name(
+        'room.create'
+    );
+    Route::post('room', [RoomController::class, 'store'])->name('room.store');
+    Route::get('room/{room}/edit', [RoomController::class, 'edit'])->name(
+        'room.edit'
+    );
+    Route::put('room/{room}', [RoomController::class, 'update'])->name(
+        'room.update'
+    );
+    Route::delete('room/{room}', [RoomController::class, 'destroy'])->name(
+        'room.destroy'
+    );
+
+    // Screening routes
+    Route::get('screening/create', [
+        ScreeningController::class,
+        'create',
+    ])->name('screening.create');
+    Route::post('screening', [ScreeningController::class, 'store'])->name(
+        'screening.store'
+    );
+    Route::get('screening/{screening}/edit', [
+        ScreeningController::class,
+        'edit',
+    ])->name('screening.edit');
+    Route::put('screening/{screening}', [
+        ScreeningController::class,
+        'update',
+    ])->name('screening.update');
+    Route::delete('screening/{screening}', [
+        ScreeningController::class,
+        'destroy',
+    ])->name('screening.destroy');
+
+    // Special movie routes
     Route::prefix('movie')->group(function () {
         Route::get("{movie}/artists", [
             MovieController::class,
@@ -85,16 +177,5 @@ Route::middleware([
             MovieController::class,
             "detach",
         ])->name("movie.detach");
-    });
-
-    Route::prefix('cinema')->group(function () {
-        Route::post('{cinema}/attach-movie', [
-            CinemaController::class,
-            'attachMovie',
-        ])->name('cinema.attach.movie');
-        Route::delete('{cinema}/detach-movie/{movie}', [
-            CinemaController::class,
-            'detachMovie',
-        ])->name('cinema.detach.movie');
     });
 });
