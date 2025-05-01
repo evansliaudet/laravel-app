@@ -15,8 +15,7 @@
     ```
 4.  **Copiez-collez le fichier `.env` suivant** à la racine du projet :
 
-        ```plaintext
-
+    ```env
     APP_NAME=Laravel
     APP_ENV=local
     APP_KEY=base64:Uwi2xL3LXrVzzIR22W8zA/FpzFXn/Ci3qEvsEdx/xU4=
@@ -84,7 +83,4 @@
     AWS_USE_PATH_STYLE_ENDPOINT=false
 
     VITE_APP_NAME="\${APP_NAME}"
-
-```
-
-```
+    ```
