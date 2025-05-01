@@ -9,6 +9,17 @@ use App\Http\Requests\ScreeningRequest;
 
 class ScreeningController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
+    }
+
     public function index()
     {
         return view('screenings.index', [
@@ -29,7 +40,9 @@ class ScreeningController extends Controller
 
     public function store(ScreeningRequest $request)
     {
-        Screening::create($request->validated());
+        Screening::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('screening.index')
@@ -44,6 +57,10 @@ class ScreeningController extends Controller
 
     public function edit(Screening $screening)
     {
+        if ($screening->user_id && $screening->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('screenings.edit', [
             'screening' => $screening,
             'movies' => Movie::all(),
@@ -53,7 +70,13 @@ class ScreeningController extends Controller
 
     public function update(ScreeningRequest $request, Screening $screening)
     {
-        $screening->update($request->validated());
+        if ($screening->user_id && $screening->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $screening->update(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('screening.index')
@@ -62,6 +85,10 @@ class ScreeningController extends Controller
 
     public function destroy(Screening $screening)
     {
+        if ($screening->user_id && $screening->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $screening->delete();
         return response()->json();
     }

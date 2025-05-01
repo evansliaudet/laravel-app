@@ -9,7 +9,7 @@ class Screening extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['movie_id', 'room_id', 'screening_time'];
+    protected $fillable = ['movie_id', 'room_id', 'screening_time', 'user_id'];
 
     protected $casts = [
         'screening_time' => 'datetime',

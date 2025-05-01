@@ -15,6 +15,12 @@ return new class extends Migration {
             $table->string('name');
             $table->string('address');
             $table->string('phone');
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->default(null)
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
 

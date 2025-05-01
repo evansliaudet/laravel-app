@@ -9,7 +9,7 @@ class Cinema extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address', 'phone'];
+    protected $fillable = ['name', 'address', 'phone', 'user_id'];
 
     public function movies()
     {

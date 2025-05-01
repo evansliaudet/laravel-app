@@ -8,8 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Artist extends Model
 {
     use HasFactory;
-    
-    protected $fillable = ["firstname", "name", "birthdate", 'country_id'];
+
+    protected $fillable = [
+        "firstname",
+        "name",
+        "birthdate",
+        'country_id',
+        'user_id',
+    ];
 
     public function country()
     {

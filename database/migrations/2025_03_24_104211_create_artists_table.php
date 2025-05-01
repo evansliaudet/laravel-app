@@ -15,6 +15,12 @@ return new class extends Migration {
             $table->string("name", 20);
             $table->string("firstname", 15);
             $table->year("birthdate")->nullable();
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->default(null)
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

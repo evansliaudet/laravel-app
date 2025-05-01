@@ -9,6 +9,19 @@ use Illuminate\Http\Request;
 
 class CinemaController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+            'attachMovie',
+            'detachMovie',
+        ]);
+    }
+
     public function index()
     {
         return view('cinemas.index', ['cinemas' => Cinema::paginate(10)]);
@@ -21,7 +34,9 @@ class CinemaController extends Controller
 
     public function store(CinemaRequest $request)
     {
-        Cinema::create($request->validated());
+        Cinema::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('cinema.index')
@@ -44,12 +59,22 @@ class CinemaController extends Controller
 
     public function edit(Cinema $cinema)
     {
+        if ($cinema->user_id && $cinema->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('cinemas.edit', ['cinema' => $cinema]);
     }
 
     public function update(CinemaRequest $request, Cinema $cinema)
     {
-        $cinema->update($request->validated());
+        if ($cinema->user_id && $cinema->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $cinema->update(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('cinema.index')
@@ -58,12 +83,20 @@ class CinemaController extends Controller
 
     public function destroy(Cinema $cinema)
     {
+        if ($cinema->user_id && $cinema->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $cinema->delete();
         return response()->json();
     }
 
     public function attachMovie(Request $request, Cinema $cinema)
     {
+        if ($cinema->user_id && $cinema->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'movie_id' => 'required|exists:movies,id',
             'screening_time' => 'required|date',
@@ -80,6 +113,10 @@ class CinemaController extends Controller
 
     public function detachMovie(Cinema $cinema, Movie $movie)
     {
+        if ($cinema->user_id && $cinema->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $cinema->movies()->detach($movie->id);
 
         return redirect()

@@ -18,6 +18,12 @@ return new class extends Migration {
                 ->foreignId('cinema_id')
                 ->constrained()
                 ->onDelete('cascade');
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->default(null)
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

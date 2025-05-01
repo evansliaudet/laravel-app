@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class CountryController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,7 +40,9 @@ class CountryController extends Controller
      */
     public function store(CountryRequest $request)
     {
-        Country::create($request->validated());
+        Country::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('country.index')
@@ -49,6 +62,10 @@ class CountryController extends Controller
      */
     public function edit(Country $country)
     {
+        if ($country->user_id && $country->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('countries.edit', ['country' => $country]);
     }
 
@@ -57,7 +74,11 @@ class CountryController extends Controller
      */
     public function update(CountryRequest $request, Country $country)
     {
-        $data = $request->validated();
+        if ($country->user_id && $country->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = array_merge($request->validated(), ['user_id' => auth()->id()]);
 
         $country->update($data);
 
@@ -71,6 +92,10 @@ class CountryController extends Controller
      */
     public function destroy(Country $country)
     {
+        if ($country->user_id && $country->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $country->delete();
 
         return response()->json();

@@ -11,6 +11,17 @@ use Illuminate\Support\Facades\Storage;
 
 class ArtistController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -51,7 +62,9 @@ class ArtistController extends Controller
      */
     public function store(ArtistRequest $request, Artist $artist)
     {
-        $artist = Artist::create($request->validated());
+        $artist = Artist::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         $poster = $request->file('poster');
         $filename =
@@ -82,6 +95,10 @@ class ArtistController extends Controller
      */
     public function edit(Artist $artist)
     {
+        if ($artist->user_id && $artist->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('artists.edit', [
             'artist' => $artist,
             'countries' => Country::all(),
@@ -93,7 +110,11 @@ class ArtistController extends Controller
      */
     public function update(ArtistRequest $request, Artist $artist)
     {
-        $data = $request->validated();
+        if ($artist->user_id && $artist->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = array_merge($request->validated(), ['user_id' => auth()->id()]);
 
         if ($request->hasFile('poster')) {
             if (
@@ -127,6 +148,10 @@ class ArtistController extends Controller
      */
     public function destroy(Artist $artist)
     {
+        if ($artist->user_id && $artist->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $artist->hasPlayed()->detach();
         $artist->save();
 

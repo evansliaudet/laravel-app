@@ -18,6 +18,12 @@ return new class extends Migration {
                 ->foreignId('country_id')
                 ->nullable()
                 ->constrained('countries');
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->default(null)
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

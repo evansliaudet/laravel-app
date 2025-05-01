@@ -21,6 +21,12 @@ return new class extends Migration {
                 ->constrained()
                 ->onDelete('cascade');
             $table->dateTime('screening_time');
+            $table
+                ->foreignId('user_id')
+                ->nullable()
+                ->default(null)
+                ->constrained()
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }

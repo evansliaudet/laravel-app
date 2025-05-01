@@ -9,9 +9,23 @@ use App\Models\Movie;
 use App\Models\Artist;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Controller;
 
 class MovieController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+            'attach',
+            'detach',
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -37,7 +51,9 @@ class MovieController extends Controller
      */
     public function store(MovieRequest $request)
     {
-        $movie = Movie::create($request->validated());
+        $movie = Movie::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         $poster = $request->file('poster');
         $filename =
@@ -70,6 +86,10 @@ class MovieController extends Controller
      */
     public function edit(Movie $movie)
     {
+        if ($movie->user_id && $movie->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $movie->image_extension = $this->getImageExtension($movie->id);
         return view('movies.edit', [
             'movie' => $movie,
@@ -83,7 +103,11 @@ class MovieController extends Controller
      */
     public function update(MovieRequest $request, Movie $movie)
     {
-        $data = $request->validated();
+        if ($movie->user_id && $movie->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = array_merge($request->validated(), ['user_id' => auth()->id()]);
 
         if ($request->hasFile('poster')) {
             if (
@@ -126,6 +150,10 @@ class MovieController extends Controller
      */
     public function destroy(Movie $movie)
     {
+        if ($movie->user_id && $movie->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $movie->delete();
 
         return response()->json();
@@ -133,6 +161,10 @@ class MovieController extends Controller
 
     public function attach(Request $request, Movie $movie)
     {
+        if ($movie->user_id && $movie->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $movie->actors()->attach($request->get('actor_id'), [
             'role_name' => $request->get('role'),
         ]);
@@ -144,6 +176,10 @@ class MovieController extends Controller
 
     public function detach(Movie $movie, Artist $artist)
     {
+        if ($movie->user_id && $movie->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $movie->actors()->detach($artist->id);
 
         return redirect()

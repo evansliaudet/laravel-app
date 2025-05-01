@@ -9,6 +9,17 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth')->only([
+            'create',
+            'store',
+            'edit',
+            'update',
+            'destroy',
+        ]);
+    }
+
     public function index()
     {
         return view('rooms.index', [
@@ -26,7 +37,9 @@ class RoomController extends Controller
 
     public function store(RoomRequest $request)
     {
-        Room::create($request->validated());
+        Room::create(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('room.index')
@@ -40,6 +53,10 @@ class RoomController extends Controller
 
     public function edit(Room $room)
     {
+        if ($room->user_id && $room->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         return view('rooms.edit', [
             'room' => $room,
             'cinemas' => Cinema::all(),
@@ -48,7 +65,13 @@ class RoomController extends Controller
 
     public function update(RoomRequest $request, Room $room)
     {
-        $room->update($request->validated());
+        if ($room->user_id && $room->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $room->update(
+            array_merge($request->validated(), ['user_id' => auth()->id()])
+        );
 
         return redirect()
             ->route('room.index')
@@ -57,6 +80,10 @@ class RoomController extends Controller
 
     public function destroy(Room $room)
     {
+        if ($room->user_id && $room->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
         $room->delete();
         return response()->json();
     }
